@@ -2,6 +2,7 @@ package com.minsait.livraria.service;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.minsait.livraria.entity.Livro;
@@ -29,6 +30,11 @@ public class LivroService {
 		return livroRepository.findById(id)
 				.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
+	}
+	
+	public ResponseEntity<String> deletarLivro(Long id) {
+		livroRepository.deleteById(id);
+		return new ResponseEntity<String>("Deletado", HttpStatus.OK);
 	}
 	
 }
