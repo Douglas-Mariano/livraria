@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -51,5 +52,11 @@ public class LivroController {
 	public ResponseEntity<String> deletarLivro(@PathVariable Long id) {
 		return this.livroService.deletarLivro(id);
 		
+	}
+	
+	@PutMapping
+	@ResponseStatus(HttpStatus.OK)
+	public Livro atualizarLivro(@Valid @RequestBody Livro livro) {
+		return this.livroService.cadastrarLivro(livro);
 	}
 }

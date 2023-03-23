@@ -37,4 +37,8 @@ public class LivroService {
 		return new ResponseEntity<String>("Deletado", HttpStatus.OK);
 	}
 	
+	public Livro atualizarLivro(Livro livro) {
+		return livroRepository.save(livro);
+	}
+	
 }
