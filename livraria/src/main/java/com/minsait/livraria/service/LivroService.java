@@ -1,44 +1,73 @@
 package com.minsait.livraria.service;
 
 import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 import com.minsait.livraria.entity.Livro;
+import com.minsait.livraria.exception.LivroNotFoundException;
 import com.minsait.livraria.repository.LivroRepository;
 
 @Service
 public class LivroService {
 
 	private LivroRepository livroRepository;
-	
+
 	@Autowired
 	public LivroService(LivroRepository livroRepository) {
 		this.livroRepository = livroRepository;
 	}
-	
+
 	public Livro cadastrarLivro(Livro livro) {
-		return livroRepository.save(livro);
+		livro.setValorPromocional();
+		return this.livroRepository.save(livro);
 	}
 
-	public List<Livro> listarLivro() {
-		return livroRepository.findAll();
+	public Livro recuperarLivro(Long id) {
+		return this.livroRepository.getReferenceById(id);
 	}
-	
-	public ResponseEntity<Livro> buscarId (Long id) {
-		return livroRepository.findById(id)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+
+	public List<Livro> recuperarTodosLivros() {
+		return this.livroRepository.findAll();
 	}
-	
-	public ResponseEntity<String> deletarLivro(Long id) {
-		livroRepository.deleteById(id);
-		return new ResponseEntity<String>("Deletado", HttpStatus.OK);
+
+	public Livro alterarLivro(@Valid Livro livro, Long id) throws LivroNotFoundException {
+
+		if (this.livroRepository.existsById(id)) {
+			Livro LivroASerAlterado = this.livroRepository.findById(id).get();
+						
+			livro.setId(id);
+									
+			if (livro.getQuantidade() == null) {
+				livro.setQuantidade(LivroASerAlterado.getQuantidade());
+			}
+			
+			if (livro.getAno() == null) {
+				livro.setAno(LivroASerAlterado.getAno());
+			}
+			
+			return this.livroRepository.save(livro);			
+
+		}
+
+		throw new LivroNotFoundException(id);
+
 	}
-	
-	public Livro atualizarLivro(Livro livro) {
-		return livroRepository.save(livro);
+		
+	public MensagemDeSucesso deletarLivro(Long id) throws LivroNotFoundException {
+
+		if (this.livroRepository.existsById(id)) {
+			this.livroRepository.deleteById(id);
+			MensagemDeSucesso mensagem = new MensagemDeSucesso();
+			mensagem.setMensagem("Deletado com sucesso");
+			return mensagem;
+
+		}
+
+		throw new LivroNotFoundException(id);
 	}
-	
+
 }
